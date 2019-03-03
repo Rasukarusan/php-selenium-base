@@ -113,6 +113,19 @@ class Models_Selenium_Base {
         return $this->driver->findElement(WebDriverBy::xpath('//*[text()="'.$text.'"]'));
     }
 
+   /**
+    * text検索で要素を取得する
+    *
+    * linkTextでも取得できない場合の最終手段となる
+    * <a>検索ワード</a>のような要素を取得できる
+    *
+    * @param  string $text 取得したい要素の単語
+    * @return array [WebDriverElement] 
+    */
+    protected function findElementsByXpathText($text) {
+        return $this->driver->findElements(WebDriverBy::xpath('//*[text()="'.$text.'"]'));
+    }
+
     /**
      * タイトルが完全一致で指定したものになるまで待つ
      *
@@ -141,6 +154,16 @@ class Models_Selenium_Base {
      */
     protected function waitClickable($element) {
         $this->driver->wait(30)->until(WebDriverExpectedCondition::elementToBeClickable($element));
+    }
+
+    /**
+     * 要素が表示されるまで待つ
+     *
+     * @param WebDriverElement $element ex.) $this->findElementById('id')
+     * @return void
+     */
+    protected function waitVisibility($element) {
+        $this->driver->wait(20)->until(WebDriverExpectedCondition::visibilityOf($element));
     }
 
     /**
@@ -187,6 +210,26 @@ class Models_Selenium_Base {
      */
     protected function scrollToElement($element) {
         $element->getLocationOnScreenOnceScrolledIntoView();
+    }
+
+    /**
+     * 一番下までスクロールする
+     *
+     * @return void
+     */
+    protected function scrollToBottom() {
+        $this->driver->executeScript("window.scrollTo(0, document.body.scrollHeight)");
+    }
+
+    /**
+     * 対象の要素までスクロールする
+     * 
+     * @param WebDriverElement $element 
+     * @return void
+     */
+    protected function moveToElement($element) {
+        $action = $this->driver->action();
+        $action->moveToElement($element)->perform();
     }
 }
 
